@@ -99,8 +99,8 @@ class BezierView extends RelativeLayout {
             float secondBezier = (float) ((bezierWidth / 4) * 3) + firstPoint;
 
             path.lineTo((float) firstPoint, bezierHeight);
-            path.cubicTo(quarterBezier, bezierHeight, quarterBezier, 10, halfBezier, 0);
-            path.cubicTo(secondBezier, 10, secondBezier, bezierHeight, secondPoint, bezierHeight);
+            path.cubicTo(quarterBezier, bezierHeight, quarterBezier, 5, halfBezier, 5);
+            path.cubicTo(secondBezier, 5, secondBezier, bezierHeight, secondPoint, bezierHeight);
             path.lineTo((float) totalWidth, bezierHeight);
         }
 
