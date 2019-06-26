@@ -286,10 +286,6 @@ public class SpaceNavigationView extends RelativeLayout {
          */
 
         restoreTranslation();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setOutlineProvider(new CustomOutline(width, height));
-        }
     }
 
     //private methods
@@ -1157,25 +1153,6 @@ public class SpaceNavigationView extends RelativeLayout {
      */
     public void setInActiveCentreButtonIconColor(@ColorInt int color) {
         inActiveCentreButtonIconColor = color;
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private class CustomOutline extends ViewOutlineProvider {
-
-        int width;
-        int height;
-
-        CustomOutline(int width, int height) {
-            this.width = width;
-            this.height = height;
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
-        @Override
-        public void getOutline(View view, Outline outline) {
-            outline.offset(5, 10);
-            outline.setRoundRect(0,0, width, height, 10f);
-        }
     }
 
 }
