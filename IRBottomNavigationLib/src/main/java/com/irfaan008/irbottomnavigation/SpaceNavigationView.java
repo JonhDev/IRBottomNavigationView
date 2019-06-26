@@ -753,6 +753,10 @@ public class SpaceNavigationView extends RelativeLayout {
         this.savedInstanceState = savedInstanceState;
     }
 
+    public int getCurrentSelectedItem() {
+        return currentSelectedItem;
+    }
+
     /**
      * Save badges and current position
      *
