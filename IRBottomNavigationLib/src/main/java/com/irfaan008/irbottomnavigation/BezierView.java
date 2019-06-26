@@ -19,6 +19,7 @@ package com.irfaan008.irbottomnavigation;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.v4.content.ContextCompat;
@@ -29,9 +30,11 @@ class BezierView extends RelativeLayout {
 
     private Paint paint;
 
+    private Paint strokePaint;
+
     private Path path;
 
-    private int bezierWidth, bezierHeight;
+    private int bezierWidth, bezierHeight, totalWidth, firstPoint, secondPoint;
 
     private int backgroundColor;
 
@@ -45,16 +48,30 @@ class BezierView extends RelativeLayout {
         this.context = context;
         this.backgroundColor = backgroundColor;
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         path = new Path();
         paint.setStrokeWidth(0);
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.FILL);
+        strokePaint.setStrokeWidth(3);
+        strokePaint.setAntiAlias(true);
+        strokePaint.setStyle(Paint.Style.STROKE);
+        strokePaint.setColor(Color.GRAY);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         setBackgroundColor(ContextCompat.getColor(context, R.color.space_transparent));
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        totalWidth = w;
+        int halfBar = (totalWidth / 2);
+        firstPoint = halfBar - (bezierWidth / 2);
+        secondPoint = firstPoint + bezierWidth;
     }
 
     @Override
@@ -75,21 +92,24 @@ class BezierView extends RelativeLayout {
          */
         path.moveTo(0, bezierHeight);
 
+
         if(!isLinear){
-            /**
-             * Seth half path of bezier view
-             */
-            path.cubicTo(bezierWidth / 4, bezierHeight, bezierWidth / 4, 0, bezierWidth / 2, 0);
-            /**
-             * Seth second part of bezier view
-             */
-            path.cubicTo((bezierWidth / 4) * 3, 0, (bezierWidth / 4) * 3, bezierHeight, bezierWidth, bezierHeight);
+            float quarterBezier = (float) (bezierWidth / 4) + firstPoint;
+            float halfBezier = (float) (bezierWidth / 2) + firstPoint;
+            float secondBezier = (float) ((bezierWidth / 4) * 3) + firstPoint;
+
+            path.lineTo((float) firstPoint, bezierHeight);
+            path.cubicTo(quarterBezier, bezierHeight, quarterBezier, 10, halfBezier, 0);
+            path.cubicTo(secondBezier, 10, secondBezier, bezierHeight, secondPoint, bezierHeight);
+            path.lineTo((float) totalWidth, bezierHeight);
         }
+
 
         /**
          * Draw our bezier view
          */
         canvas.drawPath(path, paint);
+        canvas.drawPath(path, strokePaint);
     }
 
     /**
@@ -112,6 +132,11 @@ class BezierView extends RelativeLayout {
      */
     void changeBackgroundColor(int backgroundColor) {
         this.backgroundColor = backgroundColor;
+        invalidate();
+    }
+
+    void changeOutlineColor(int outlineColor) {
+        this.strokePaint.setColor(outlineColor);
         invalidate();
     }
 }

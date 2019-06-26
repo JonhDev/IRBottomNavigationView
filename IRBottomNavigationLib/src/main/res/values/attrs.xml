@@ -14,6 +14,8 @@
         <attr name="inactive_centre_button_icon_color" format="color" />
         <attr name="active_centre_button_background_color" format="color"/>
         <attr name="centre_part_linear" format="boolean" />
+        <attr name="space_bar_outline" format="color" />
+        <attr name="ripple_color" format="integer"/>
     </declare-styleable>
 
 </resources>

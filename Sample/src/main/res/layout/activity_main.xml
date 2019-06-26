@@ -15,5 +15,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        app:space_background_color="@color/space_white"
+        app:elevation="8dp"
+        app:space_bar_outline="#d0d6e0"
+        app:centre_button_color="@android:color/holo_red_light"
+        app:inactive_item_color="@android:color/darker_gray"
+        app:active_item_color="@android:color/holo_red_dark"
         app:layout_behavior="com.irfaan008.irbottomnavigation.SpaceNavigationViewBehavior" />
 </android.support.design.widget.CoordinatorLayout>

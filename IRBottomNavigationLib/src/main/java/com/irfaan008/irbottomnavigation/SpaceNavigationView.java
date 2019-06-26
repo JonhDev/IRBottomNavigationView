@@ -16,15 +16,19 @@
  */
 package com.irfaan008.irbottomnavigation;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Outline;
+import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
@@ -33,6 +37,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -101,6 +106,10 @@ public class SpaceNavigationView extends RelativeLayout {
 
     private int activeCentreButtonBackgroundColor = NOT_DEFINED;
 
+    private int rippleColor = NOT_DEFINED;
+
+    private int outlineColor = NOT_DEFINED;
+
     private int centreButtonIcon = NOT_DEFINED;
 
     private int activeSpaceItemColor = NOT_DEFINED;
@@ -167,6 +176,8 @@ public class SpaceNavigationView extends RelativeLayout {
             activeCentreButtonIconColor = typedArray.getColor(R.styleable.SpaceNavigationView_active_centre_button_icon_color, resources.getColor(R.color.space_white));
             inActiveCentreButtonIconColor = typedArray.getColor(R.styleable.SpaceNavigationView_inactive_centre_button_icon_color, resources.getColor(com.irfaan008.irbottomnavigation.R.color.default_inactive_item_color));
             activeCentreButtonBackgroundColor = typedArray.getColor(R.styleable.SpaceNavigationView_active_centre_button_background_color, resources.getColor(com.irfaan008.irbottomnavigation.R.color.centre_button_color));
+            rippleColor = typedArray.getResourceId(R.styleable.SpaceNavigationView_ripple_color, R.drawable.gray_ripple);
+            outlineColor = typedArray.getColor(R.styleable.SpaceNavigationView_space_bar_outline, resources.getColor(com.irfaan008.irbottomnavigation.R.color.space_default_color));
 
             typedArray.recycle();
         }
@@ -211,6 +222,12 @@ public class SpaceNavigationView extends RelativeLayout {
 
         if (inActiveCentreButtonIconColor == NOT_DEFINED)
             inActiveCentreButtonIconColor = ContextCompat.getColor(context, com.irfaan008.irbottomnavigation.R.color.default_inactive_item_color);
+
+        if (rippleColor == NOT_DEFINED)
+            rippleColor = R.drawable.white_ripple;
+
+        if (outlineColor == NOT_DEFINED)
+            outlineColor = ContextCompat.getColor(context, com.irfaan008.irbottomnavigation.R.color.space_default_color);
 
         /**
          * Set main layout size and color
@@ -269,6 +286,10 @@ public class SpaceNavigationView extends RelativeLayout {
          */
 
         restoreTranslation();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setOutlineProvider(new CustomOutline(width, height));
+        }
     }
 
     //private methods
@@ -330,7 +351,7 @@ public class SpaceNavigationView extends RelativeLayout {
         /**
          * Centre content size
          */
-        LayoutParams centreContentParams = new LayoutParams(centreContentWight, spaceNavigationHeight);
+        LayoutParams centreContentParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, spaceNavigationHeight);
         centreContentParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         centreContentParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 
@@ -429,10 +450,13 @@ public class SpaceNavigationView extends RelativeLayout {
                 targetWidth = contentWidth;
             }
 
-            RelativeLayout.LayoutParams textAndIconContainerParams = new RelativeLayout.LayoutParams(
+            LayoutParams textAndIconContainerParams = new LayoutParams(
                     targetWidth, mainContentHeight);
             RelativeLayout textAndIconContainer = (RelativeLayout) inflater.inflate(R.layout.space_item_view, this, false);
             textAndIconContainer.setLayoutParams(textAndIconContainerParams);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                textAndIconContainer.setBackground(ContextCompat.getDrawable(getContext(), rippleColor));
+            }
 
             ImageView spaceItemIcon = (ImageView) textAndIconContainer.findViewById(R.id.space_icon);
             TextView spaceItemText = (TextView) textAndIconContainer.findViewById(R.id.space_text);
@@ -608,6 +632,7 @@ public class SpaceNavigationView extends RelativeLayout {
         rightContent.setBackgroundColor(spaceBackgroundColor);
         centreBackgroundView.setBackgroundColor(spaceBackgroundColor);
         leftContent.setBackgroundColor(spaceBackgroundColor);
+        centreContent.changeOutlineColor(outlineColor);
     }
 
     /**
@@ -698,6 +723,7 @@ public class SpaceNavigationView extends RelativeLayout {
     private BezierView buildBezierView() {
         BezierView bezierView = new BezierView(context, spaceBackgroundColor);
         bezierView.build(centreContentWight, spaceNavigationHeight - mainContentHeight,isCentrePartLinear);
+        bezierView.changeOutlineColor(outlineColor);
         return bezierView;
     }
 
@@ -1102,6 +1128,10 @@ public class SpaceNavigationView extends RelativeLayout {
     }
 
 
+    public void changeOutlineColor(@ColorInt int color) {
+        centreContent.changeOutlineColor(color);
+    }
+
     /**
      * If you want to show full badge text or show 9+
      *
@@ -1128,4 +1158,24 @@ public class SpaceNavigationView extends RelativeLayout {
     public void setInActiveCentreButtonIconColor(@ColorInt int color) {
         inActiveCentreButtonIconColor = color;
     }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private class CustomOutline extends ViewOutlineProvider {
+
+        int width;
+        int height;
+
+        CustomOutline(int width, int height) {
+            this.width = width;
+            this.height = height;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
+        @Override
+        public void getOutline(View view, Outline outline) {
+            outline.offset(5, 10);
+            outline.setRoundRect(0,0, width, height, 10f);
+        }
+    }
+
 }
