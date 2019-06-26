@@ -74,6 +74,7 @@ public class SpaceNavigationView extends RelativeLayout {
     private static final int MIN_SPACE_ITEM_SIZE = 2;
     private final int spaceNavigationHeight = (int) getResources().getDimension(com.irfaan008.irbottomnavigation.R.dimen.space_navigation_height);
     private final int mainContentHeight = (int) getResources().getDimension(com.irfaan008.irbottomnavigation.R.dimen.main_content_height);
+    private final int cornersHeight = (int) getResources().getDimension(R.dimen.main_corners_height);
     private final int centreContentWight = (int) getResources().getDimension(com.irfaan008.irbottomnavigation.R.dimen.centre_content_width);
     private final int centreButtonSize = (int) getResources().getDimension(com.irfaan008.irbottomnavigation.R.dimen.space_centre_button_default_size);
     private List<SpaceItem> spaceItems = new ArrayList<>();
@@ -86,7 +87,7 @@ public class SpaceNavigationView extends RelativeLayout {
     private Bundle savedInstanceState;
     private CentreButton centreButton;
     private RelativeLayout centreBackgroundView;
-    private LinearLayout leftContent, rightContent;
+    private LinearLayout leftContent, rightContent, backgroundContainer;
     private BezierView centreContent;
     private Typeface customFont;
     private Context context;
@@ -300,6 +301,7 @@ public class SpaceNavigationView extends RelativeLayout {
 
         leftContent = new LinearLayout(context);
         rightContent = new LinearLayout(context);
+        backgroundContainer = new LinearLayout(context);
 
         centreContent = buildBezierView();
 
@@ -361,7 +363,7 @@ public class SpaceNavigationView extends RelativeLayout {
         /**
          * Left content size
          */
-        LayoutParams leftContentParams = new LayoutParams(contentWidth,mainContentHeight);
+        LayoutParams leftContentParams = new LayoutParams(contentWidth, cornersHeight);
         leftContentParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
         leftContentParams.addRule(LinearLayout.HORIZONTAL);
         leftContentParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
@@ -369,10 +371,14 @@ public class SpaceNavigationView extends RelativeLayout {
         /**
          * Right content size
          */
-        LayoutParams rightContentParams = new LayoutParams(contentWidth, mainContentHeight);
+        LayoutParams rightContentParams = new LayoutParams(contentWidth, cornersHeight);
         rightContentParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         rightContentParams.addRule(LinearLayout.HORIZONTAL);
         rightContentParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+
+        LayoutParams backgroundContentParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mainContentHeight);
+        backgroundContentParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        backgroundContentParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 
         /**
          * Adding views background colors
@@ -387,15 +393,16 @@ public class SpaceNavigationView extends RelativeLayout {
         /**
          * Adding views to mainContent
          */
-        addView(leftContent, leftContentParams);
-        addView(rightContent, rightContentParams);
 
 
         /**
          * Adding views to mainView
          */
+        addView(backgroundContainer, backgroundContentParams);
         addView(centreBackgroundView, centreBackgroundViewParams);
         addView(centreContent, centreContentParams);
+        addView(leftContent, leftContentParams);
+        addView(rightContent, rightContentParams);
         addView(mainContent, mainContentParams);
 
         /**
@@ -626,6 +633,7 @@ public class SpaceNavigationView extends RelativeLayout {
      */
     private void setBackgroundColors() {
         rightContent.setBackgroundColor(spaceBackgroundColor);
+        backgroundContainer.setBackgroundColor(spaceBackgroundColor);
         centreBackgroundView.setBackgroundColor(spaceBackgroundColor);
         leftContent.setBackgroundColor(spaceBackgroundColor);
         centreContent.changeOutlineColor(outlineColor);
