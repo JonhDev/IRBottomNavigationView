@@ -1167,4 +1167,12 @@ public class SpaceNavigationView extends RelativeLayout {
         inActiveCentreButtonIconColor = color;
     }
 
+    /**
+     * get the number of items in the space navigation view
+     *
+     */
+    public int count() {
+        return spaceItems.size();
+    }
+
 }
